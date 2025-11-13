@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartVyapar Login</title>
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    
+    <script src="tailwind.config.js"></script> 
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Fallback and basic styles */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            /* Enhanced Gradient Background */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+    /* Fallback and basic styles */
+    body { 
+        font-family: 'Inter', sans-serif; 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Custom Animations for Loading Screen */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 1s ease-out forwards;
+        animation-delay: 0.5s; /* Delay for better sequence */
+        opacity: 0; /* Initially hidden */
+    }
+
+    @keyframes progressBar {
+        0% { width: 0%; }
+        100% { width: 100%; }
+    }
+    .animate-progress-bar {
+        animation: progressBar 1.5s ease-out forwards;
+    }
+
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+    <div class="login-box bg-white p-10 rounded-xl shadow-2xl w-full max-w-sm border border-indigo-200">
+        
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-2 text-center flex items-center justify-center">
+            <ion-icon name="storefront-outline" class="text-indigo-600 text-4xl mr-3"></ion-icon>
+            SmartVyapar
+        </h2>
+        <p class="text-lg text-gray-600 mb-8 text-center font-medium">Cashier Login Portal</p>
+        
+        <form id="login-form" class="space-y-6">
+            
+            <div class="relative">
+                <label for="username" class="sr-only">Username</label>
+                <input type="text" id="username" placeholder="Enter Username" required 
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out" />
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <ion-icon name="person-outline" class="text-gray-400"></ion-icon>
+                </span>
+            </div>
+
+            <div class="relative">
+                <label for="password" class="sr-only">Password</label>
+                <input type="password" id="password" placeholder="Enter Password" required 
+                       class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-150 ease-in-out" />
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <ion-icon name="lock-closed-outline" class="text-gray-400"></ion-icon>
+                </span>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-indigo-600 text-white py-3 rounded-lg text-xl font-bold shadow-lg hover:bg-indigo-700 hover:shadow-xl transition duration-200 ease-in-out">
+                Login
+            </button>
+            
+            <p id="error-message" class="text-center text-sm font-medium text-red-600 mt-4"></p>
+        </form>
+    </div>
+
+  <div id="loading-overlay" class="fixed inset-0 bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center z-50 hidden">
+    <div class="flex flex-col items-center p-8 bg-white bg-opacity-10 rounded-xl shadow-lg">
+        <h2 class="text-4xl font-extrabold text-white mb-2 tracking-wide animate-pulse">
+            <ion-icon name="storefront-outline" class="text-white text-5xl mr-3"></ion-icon>
+            SmartVyapar
+        </h2>
+        <p class="text-white text-xl font-medium mb-6 animate-fade-in">Loading Dashboard...</p>
+        
+        <div class="w-64 h-2 bg-white bg-opacity-30 rounded-full overflow-hidden">
+            <div class="h-full bg-white rounded-full animate-progress-bar"></div>
+        </div>
+        <p class="mt-4 text-white text-sm opacity-80">Please wait, almost there!</p>
+    </div>
+</div>
+    <script src="auth.js"></script>
+</body>
+</html>

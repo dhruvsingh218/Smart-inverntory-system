@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartVyapar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <script src="tailwind.config.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body class="bg-gray-100">
+    <iframe id="pdf-download-frame" style="display: none;"></iframe>
+
+    <div class="flex h-screen">
+        <aside
+            class="w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0 left-0 z-30 md:relative md:translate-x-0 -translate-x-full transition-transform duration-300 ease-in-out"
+            id="sidebar">
+            <div class="flex items-center justify-center h-20 border-b border-gray-700">
+                <ion-icon name="storefront-outline" class="text-3xl text-indigo-400"></ion-icon>
+                <span class="text-2xl font-bold ml-2">SmartVyapar</span>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <a href="#" class="nav-link active flex items-center px-4 py-3 rounded-lg bg-indigo-600"
+                    onclick="showPage('dashboard', this)">
+                    <ion-icon name="grid-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700"
+                    onclick="showPage('billing', this)">
+                    <ion-icon name="cash-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Billing (POS)</span>
+                </a>
+                <!-- <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700" onclick="showPage('products', this)">
+                    <ion-icon name="cube-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Products</span> -->
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700"
+                    onclick="showPage('stock', this)">
+                    <ion-icon name="clipboard-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Stock</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700"
+                    onclick="showPage('suppliers', this)">
+                    <ion-icon name="people-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Suppliers</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700"
+                    onclick="showPage('reports', this)">
+                    <ion-icon name="analytics-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Reports</span>
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700"
+                    onclick="showPage('alerts', this)">
+                    <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+                    <span class="ml-3">Alerts</span>
+                    <span class="ml-auto bg-red-500 text-xs font-semibold px-2 py-0.5 rounded-full">0</span>
+                </a>
+            </nav>
+
+            <div class="h-20 border-t border-gray-700 flex items-center px-4">
+                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/667eea/ffffff?text=A"
+                    alt="Admin User">
+                <div class="ml-3">
+                    <p class="text-sm font-medium">Admin User</p>
+                    <a href="#" class="text-xs text-gray-400 hover:text-white" onclick="logout()">Log Out</a>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm h-20 flex items-center justify-between px-6 sticky top-0 z-20">
+                <button class="md:hidden text-gray-600" id="menu-toggle">
+                    <ion-icon name="menu-outline" class="text-3xl"></ion-icon>
+                </button>
+
+                <h1 class="text-2xl font-semibold text-gray-800 hidden md:block" id="page-title">Dashboard</h1>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <ion-icon name="search-outline" class="text-gray-400"></ion-icon>
+                        </span>
+                        <input type="text"
+                            class="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Search products...">
+                    </div>
+                    <button
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 flex items-center">
+                        <ion-icon name="add-outline" class="text-xl -ml-1"></ion-icon>
+                        <span class="ml-1 hidden md:inline">New Sale</span>
+                        <span class="ml-1 md:hidden">Sale</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6">
+
+                <div id="dashboard-page" class="content-page active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+                                <ion-icon name="trending-up-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Today's Sales</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-full">
+                                <ion-icon name="archive-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Stock Value</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-full">
+                                <ion-icon name="alert-circle-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Low Stock Items</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                <ion-icon name="people-circle-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-500">Total Suppliers</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales Overview (Last 7 Days)</h3>
+                            <div class="h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+                                [Chart will load here]
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Selling Products</h3>
+                            <div class="h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500">
+                                [Chart will load here]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Sales</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Invoice ID</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Customer</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Total</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm text-gray-800">#INV-00001</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">Customer Name</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">₹0.00</td>
+                                        <td class="py-3 px-4 text-sm">
+                                            <span
+                                                class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">Status</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="billing-page" class="content-page">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                        <div class="flex flex-col gap-6">
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Current Sale (Cart)</h3>
+
+                                <div
+                                    class="flex border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 mb-4">
+                                    <input type="text" id="billing-input"
+                                        class="pl-4 pr-2 py-3 w-full focus:outline-none"
+                                        placeholder="Scan barcode or type product name...">
+                                    <button class="px-4 bg-gray-100 hover:bg-gray-200">
+                                        <ion-icon name="barcode-outline" class="text-2xl text-gray-700"></ion-icon>
+                                    </button>
+                                </div>
+
+                                <div class="overflow-x-auto mb-4">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50 border-b">
+                                            <tr>
+                                                <th class="py-3 px-4 text-left font-medium text-sm text-gray-600">
+                                                    Product</th>
+                                                <th class="py-3 px-4 text-left font-medium text-sm text-gray-600">Price
+                                                </th>
+                                                <th class="py-3 px-4 text-center font-medium text-sm text-gray-600">Qty
+                                                </th>
+                                                <th class="py-3 px-4 text-right font-medium text-sm text-gray-600">Total
+                                                </th>
+                                                <th class="py-3 px-4 text-center font-medium text-sm text-gray-600">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cart-body">
+                                            <tr>
+                                                <td colspan="5" class="py-4 text-center text-sm text-gray-500">Scan or
+                                                    add a product to begin.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-lg shadow-md h-fit">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Summary</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Subtotal</span>
+                                        <span id="subtotal-value" class="font-medium text-gray-800">₹0.00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Discount</span>
+                                        <span class="font-medium text-gray-800">₹0.00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">GST (5%)</span>
+                                        <span id="gst-value" class="font-medium text-gray-800">₹0.00</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between text-xl font-bold">
+                                        <span class="text-gray-900">Total</span>
+                                        <span id="total-value" class="text-indigo-600">₹0.00</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-6">
+                                    <label for="customer" class="block text-sm font-medium text-gray-700 mb-1">Customer
+                                        (Optional)</label>
+                                    <input type="text" id="customer"
+                                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Enter customer name or phone">
+                                </div>
+
+                                <div class="mt-6">
+                                    <button id="proceedToPaymentBtn"
+                                        class="w-full bg-indigo-600 text-white py-3 rounded-lg text-lg font-semibold shadow hover:bg-indigo-700 transition-colors">
+                                        Proceed to Payment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Product List</h3>
+                            <div class="relative mb-4">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <ion-icon name="search-outline" class="text-gray-400"></ion-icon>
+                                </span>
+                                <input type="text"
+                                    class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    placeholder="Search products...">
+                            </div>
+
+                            <div id="product-list-container"
+                                class="max-h-[75vh] overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 p-1">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="products-page" class="content-page">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Products</h2>
+                        <button id="addProductBtn"
+                            class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 flex items-center">
+                            <ion-icon name="add-outline" class="text-xl -ml-1"></ion-icon>
+                            <span class="ml-1">Add New Product</span>
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Product ID</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Name</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Category</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Price (₹)</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Stock Qty</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm text-gray-800">P-001</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">Product 1</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">Category 1</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">0.00</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">0</td>
+                                        <td class="py-3 px-4 text-sm space-x-2">
+                                            <button class="text-blue-500 hover:text-blue-700"><ion-icon
+                                                    name="create-outline"></ion-icon></button>
+                                            <button class="text-red-500 hover:text-red-700"><ion-icon
+                                                    name="trash-outline"></ion-icon></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="stock-page" class="content-page">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Stock</h2>
+                        <button
+                            class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 flex items-center">
+                            <ion-icon name="add-outline" class="text-xl -ml-1"></ion-icon>
+                            <span class="ml-1">Add New Stock</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-full">
+                                <ion-icon name="archive-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Stock Value</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                <ion-icon name="grid-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Products (SKUs)</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-full">
+                                <ion-icon name="alert-circle-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Low Stock</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full">
+                                <ion-icon name="close-circle-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Out of Stock</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Current Inventory</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Product ID</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Name</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Category</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Purchase Price (₹)</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Selling Price (₹)</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Current Stock</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Stock Value (₹)</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="current-inventory-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="suppliers-page" class="content-page">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800">Suppliers</h2>
+                        <button id="addSupplierBtn"
+                            class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 flex items-center">
+                            <ion-icon name="add-outline" class="text-xl -ml-1"></ion-icon>
+                            <span class="ml-1">Add New Supplier</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                <ion-icon name="people-circle-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Suppliers</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full">
+                                <ion-icon name="card-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Dues</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">All Suppliers</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Supplier Name</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Contact Person</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Email</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Phone</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Pending Dues (₹)</th>
+                                        <th class="py-3 px-4 font-medium text-sm text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-3 px-4 text-sm text-gray-800">Supplier 1</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">Contact Name</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">supplier@email.com</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">0000000000</td>
+                                        <td class="py-3 px-4 text-sm text-gray-800">0.00</td>
+                                        <td class="py-3 px-4 text-sm space-x-2">
+                                            <button class="text-blue-500 hover:text-blue-700"><ion-icon
+                                                    name="create-outline"></ion-icon></button>
+                                            <button class="text-red-500 hover:text-red-700"><ion-icon
+                                                    name="trash-outline"></ion-icon></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reports-page" class="content-page">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-semibold text-gray-800">Reports & Analytics</h2>
+                        <div class="flex items-center space-x-2">
+                            <label for="date-range" class="text-sm font-medium text-gray-700">Date Range:</label>
+                            <select id="date-range"
+                                class="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option>Last 7 Days</option>
+                                <option selected>Last 30 Days</option>
+                                <option>This Month</option>
+                                <option>All Time</option>
+                            </select>
+                            <button
+                                class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 flex items-center text-sm">
+                                <ion-icon name="download-outline" class="text-lg -ml-1 mr-1"></ion-icon>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-full">
+                                <ion-icon name="wallet-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Revenue</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-indigo-100 text-indigo-600 p-3 rounded-full">
+                                <ion-icon name="cash-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Profit</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+                                <ion-icon name="document-text-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Orders</p>
+                                <p class="text-2xl font-bold text-gray-900">0</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md flex items-center">
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full">
+                                <ion-icon name="stats-chart-outline" class="text-3xl"></ion-icon>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Avg. Order Value</p>
+                                <p class="text-2xl font-bold text-gray-900">₹0.00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue Over Time (Last 30 Days)</h3>
+                            <div class="h-80 flex items-center justify-center bg-gray-50 rounded-lg p-4">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales by Category</h3>
+                            <div class="h-80 flex flex-col items-center justify-center">
+                                <div class="h-48 w-48 relative">
+                                    <svg class="w-full h-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="18" cy="18" r="15.915" class="fill-none stroke-gray-200"
+                                            stroke-width="4"></circle>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-2xl font-bold text-gray-800">0</span>
+                                        <span class="text-sm text-gray-500">Sales</span>
+                                    </div>
+                                </div>
+                                <div class="mt-6 space-y-2 text-sm text-gray-600">
+                                    <div class="flex items-center"><span
+                                            class="w-3 h-3 rounded-full bg-indigo-600 mr-2"></span>Category 1 (0%)</div>
+                                    <div class="flex items-center"><span
+                                            class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>Category 2 (0%)</div>
+                                    <div class="flex items-center"><span
+                                            class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>Category 3 (0%)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Top 5 Selling Products</h3>
+                            <div class="space-y-5 pt-2">
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium text-gray-700 flex justify-between"><span>Product
+                                            1</span> <span>0 units</span></p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium text-gray-700 flex justify-between"><span>Product
+                                            2</span> <span>0 units</span></p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium text-gray-700 flex justify-between"><span>Product
+                                            3</span> <span>0 units</span></p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium text-gray-700 flex justify-between"><span>Product
+                                            4</span> <span>0 units</span></p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-medium text-gray-700 flex justify-between"><span>Product
+                                            5</span> <span>0 units</span></p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Detailed Sales Report</h3>
+                            <div class="overflow-x-auto max-h-80">
+                                <table class="w-full text-left">
+                                    <thead class="bg-gray-50 border-b sticky top-0">
+                                        <tr>
+                                            <th class="py-3 px-4 font-medium text-sm text-gray-600">Invoice ID</th>
+                                            <th class="py-3 px-4 font-medium text-sm text-gray-600">Date</th>
+                                            <th class="py-3 px-4 font-medium text-sm text-gray-600">Items</th>
+                                            <th class="py-3 px-4 font-medium text-sm text-gray-600">Revenue (₹)</th>
+                                            <th class="py-3 px-4 font-medium text-sm text-gray-600">Profit (₹)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <td class="py-3 px-4 text-sm text-gray-800">#INV-00001</td>
+                                            <td class="py-3 px-4 text-sm text-gray-800">Date</td>
+                                            <td class="py-3 px-4 text-sm text-gray-800">0</td>
+                                            <td class="py-3 px-4 text-sm text-gray-800">0.00</td>
+                                            <td class="py-3 px-4 text-sm text-green-600">+0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="alerts-page" class="content-page">
+                    <h2 class="text-2xl font-semibold text-gray-800">Alerts & Notifications</h2>
+                    <p class="mt-4 text-gray-600">A list of all notifications, such as low stock alerts and pending
+                        supplier dues, will be shown here.</p>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="addProductModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-lg shadow-xl overflow-hidden transition-all transform-gpu scale-95 opacity-0"
+            style="transition: transform 0.3s ease-out, opacity 0.3s ease-out;">
+            <div class="flex justify-between items-center p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Add New Product</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <form class="p-5 space-y-4">
+                <div>
+                    <label for="productName" class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                    <input type="text" id="productName"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="e.g., Product 1">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="productCategory"
+                            class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <input type="text" id="productCategory"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., Category 1">
+                    </div>
+                    <div>
+                        <label for="productID" class="block text-sm font-medium text-gray-700 mb-1">Product ID /
+                            SKU</label>
+                        <input type="text" id="productID"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., P-001">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" id="productPrice"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., 0.00">
+                    </div>
+                    <div>
+                        <label for="productStock" class="block text-sm font-medium text-gray-700 mb-1">Stock
+                            Quantity</label>
+                        <input type="number" id="productStock"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., 0">
+                    </div>
+                </div>
+                <div>
+                    <label for="productSupplier" class="block text-sm font-medium text-gray-700 mb-1">Supplier
+                        (Optional)</label>
+                    <input type="text" id="productSupplier"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="e.g., Supplier 1">
+                </div>
+            </form>
+            <div class="flex justify-end items-center p-5 border-t bg-gray-50 space-x-3">
+                <button id="cancelModalBtn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+                    Save Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addSupplierModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-lg shadow-xl overflow-hidden transition-all transform-gpu scale-95 opacity-0"
+            style="transition: transform 0.3s ease-out, opacity 0.3s ease-out;">
+            <div class="flex justify-between items-center p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-800">Add New Supplier</h3>
+                <button id="closeSupplierModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+                </button>
+            </div>
+            <form class="p-5 space-y-4">
+                <div>
+                    <label for="supplierName" class="block text-sm font-medium text-gray-700 mb-1">Supplier Name</label>
+                    <input type="text" id="supplierName"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="e.g., Supplier 1">
+                </div>
+                <div>
+                    <label for="contactPerson" class="block text-sm font-medium text-gray-700 mb-1">Contact
+                        Person</label>
+                    <input type="text" id="contactPerson"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="e.g., Contact Name">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="supplierEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="supplierEmail"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., supplier@email.com">
+                    </div>
+                    <div>
+                        <label for="supplierPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="tel" id="supplierPhone"
+                            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g., 0000000000">
+                    </div>
+                </div>
+                <div>
+                    <label for="supplierAddress" class="block text-sm font-medium text-gray-700 mb-1">Address
+                        (Optional)</label>
+                    <input type="text" id="supplierAddress"
+                        class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="e.g., 123, ABC Market, New Delhi">
+                </div>
+            </form>
+            <div class="flex justify-end items-center p-5 border-t bg-gray-50 space-x-3">
+                <button id="cancelSupplierModalBtn"
+                    class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+                <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700">
+                    Save Supplier
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-lg shadow-xl overflow-hidden transition-all transform-gpu scale-95 opacity-0"
+            style="transition: transform 0.3s ease-out, opacity 0.3s ease-out;">
+            <div class="p-5 border-b">
+                <h3 class="text-xl font-semibold text-gray-800 text-center">Complete Transaction</h3>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div class="text-center mb-4">
+                    <p class="text-sm text-gray-600">Amount Due:</p>
+                    <h4 id="modal-grand-total" class="text-4xl font-bold text-indigo-600">₹0.00</h4>
+                </div>
+
+                <h5 class="text-md font-semibold text-gray-700">Select Payment Method:</h5>
+                <div class="grid grid-cols-3 gap-3">
+                    <button id="cashBtn" data-method="Cash"
+                        class="payment-method-btn bg-green-500 text-white py-3 rounded-lg shadow hover:bg-green-600 transition-colors">Cash</button>
+                    <button id="cardBtn" data-method="Card"
+                        class="payment-method-btn bg-blue-500 text-white py-3 rounded-lg shadow hover:bg-blue-600 transition-colors">Card</button>
+                    <button id="upiBtn" data-method="UPI"
+                        class="payment-method-btn bg-yellow-500 text-gray-800 py-3 rounded-lg shadow hover:bg-yellow-600 transition-colors">UPI</button>
+                </div>
+            </div>
+
+            <div class="flex justify-end items-center p-3 border-t bg-gray-50">
+                <button id="cancelPaymentBtn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden" id="sidebar-overlay"></div>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

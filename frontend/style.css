@@ -1,0 +1,27 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Basic styles for showing/hiding content pages */
+.content-page {
+    display: none;
+}
+
+.content-page.active {
+    display: block;
+}
+
+/* Custom scrollbar for aesthetics */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
